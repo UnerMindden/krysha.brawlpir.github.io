@@ -324,43 +324,58 @@
         <img src="3.png" alt="Алмаз" id="diamond" class="diamond" style="display: none;">
     </div>
     <div class="button-container">
-    <button class="start-button" onclick="openModal()">START</button>
-    <div class="business-name">
-       <img src="tg.svg" alt="Telegram Icon" style="vertical-align: middle; margin-right: 10px; width: 60px; height: 60px;">
-        KRYSHA
+        <button class="start-button" onclick="openModal()">START</button>
+        <div class="business-name">
+            <img src="tg.svg" alt="Telegram Icon" style="vertical-align: middle; margin-right: 10px; width: 60px; height: 60px;">
+            KRYSHA
+        </div>
     </div>
-</div>
     <div id="modal">
         <div class="modal-content">
-             <button class="close-button" onclick="closeModal()">&#10005;</button>
+            <button class="close-button" onclick="closeModal()">&#10005;</button>
             <p class="hash-id-text">GAME HASH ID </p>
-            <input type="text" id="hashIdInput" placeholder="Enter hash id" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter hash id'">
+            <input type="text" id="hashIdInput" placeholder="Enter hash id" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter hash id'" onkeydown="handleKeyDown(event)">
             <button class="modal-button" onclick="validateAndStartShuffle()">OK</button>
         </div>
     </div>
     <div id="message"></div> <!-- Область для сообщений -->
     <script>
         function openModal() {
-            document.getElementById('modal').style.display = 'flex';
+            const modal = document.getElementById('modal');
+            const input = document.getElementById('hashIdInput');
+            input.value = ''; // Очищает поле ввода при открытии модального окна
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10); // Добавить небольшой таймаут, чтобы обеспечить применение CSS transition
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 500); // Таймаут должен совпадать с продолжительностью transition
         }
 
         function validateAndStartShuffle() {
-    const input = document.getElementById('hashIdInput');
-    const hashId = input.value.trim();
-    
-    if (hashId.length === 0) {
-        input.classList.add('error');
-        input.placeholder = 'Enter hash id';
-    } else if (hashId.length !== 128) {
-        input.classList.add('error');
-        input.placeholder = 'Invalid Hash ID';
-        input.value = ''; // Очистка поля ввода
-    } else {
-        input.classList.remove('error');
-        document.getElementById('diamond').style.display = 'none'; // Скрыть алмаз
-        startShuffle();
-    }
-}
+            const input = document.getElementById('hashIdInput');
+            const hashId = input.value.trim();
+            
+            if (hashId.length === 0) {
+                input.classList.add('error');
+                input.placeholder = 'Enter hash id';
+            } else if (hashId.length !== 128) {
+                input.classList.add('error');
+                input.placeholder = 'Invalid Hash ID';
+                input.value = ''; // Очистка поля ввода
+            } else {
+                input.classList.remove('error');
+                document.getElementById('diamond').style.display = 'none'; // Скрыть алмаз
+                startShuffle();
+            }
+        }
+
         function startShuffle() {
             document.getElementById('modal').style.display = 'none';
             document.querySelectorAll('.container img').forEach(img => {
@@ -402,7 +417,7 @@
             shuffleStep(1);
         }
 
-       function displayRandomMessage() {
+        function displayRandomMessage() {
             const messages = ["Right Skull", "Middle Skull", "Left Skull"];
             const skullIds = ["skull3", "skull2", "skull1"];
             const randomIndex = Math.floor(Math.random() * messages.length);
@@ -426,23 +441,14 @@
             diamond.style.top = `${selectedSkull.offsetTop + selectedSkull.offsetHeight - 40}px`;  // Поднять алмаз выше
         }
 
-        function openModal() {
-            const modal = document.getElementById('modal');
-            const input = document.getElementById('hashIdInput');
-            input.value = ''; // Очищает поле ввода при открытии модального окна
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10); // Добавить небольшой таймаут, чтобы обеспечить применение CSS transition
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                validateAndStartShuffle();
+                // Скрыть клавиатуру, убрав фокус с input
+                document.getElementById('hashIdInput').blur();
+            }
         }
 
-        function closeModal() {
-            const modal = document.getElementById('modal');
-            modal.classList.remove('show');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 500); // Таймаут должен совпадать с продолжительностью transition
-        }
         function showNotification() {
             const notification = document.getElementById('notification');
             notification.style.display = 'block'; // Сразу делаем элемент блочным, чтобы начать анимацию
@@ -473,15 +479,10 @@
 
         function startRandomNotification() {
             showNotification();
-            setTimeout(startRandomNotification,  300000); // Следующее уведомление через 20 секунд
+            setTimeout(startRandomNotification,  300000); // Следующее уведомление через 300000 миллисекунд (5 минут)
         }
 
         document.addEventListener('DOMContentLoaded', startRandomNotification);
-
-
-
-
-
     </script>
 </body>
 </html>
